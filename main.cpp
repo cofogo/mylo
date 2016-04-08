@@ -28,6 +28,7 @@ void versionHistory();
 void logging();//the main purpose of the program
 void displayLog();//displays the log file
 void listCommands();//lists available escape commands of the program
+const std::string currentDateTime();//return current date and time
 
 int main()
 {
@@ -87,6 +88,7 @@ int choicer(const int& minNum, const int& maxNum)
     }while(num < minNum || num > maxNum);
     return num;
 }
+
 void graphicsOptions()
 {
     int choice;
@@ -295,43 +297,51 @@ void versionHistory()
     cout << "***END***\n";
 }
 
+const std::string currentDateTime() {//TODO use this instead of internal logging() code
+    time_t     now = time(0);
+    struct tm  tstruct;
+    char       buf[80];
+    tstruct = *localtime(&now);
+    // Visit http://en.cppreference.com/w/cpp/chrono/c/strftime
+    // for more information about date/time format
+    //%F and %T seems to not work on windows
+    strftime(buf, sizeof(buf), "%Y-%m-%d[%H:%M:%S](%A)", &tstruct);
+
+    return buf;
+}
+
+
 void logging()
 {
     string theInput;
-    char timeBuffer[80];
     ofstream theLog;
+    const string theTime = currentDateTime();
+    
     theLog.open("TheLog", ios::out | ios::app | ios::binary);
 
-    time_t rawTime;
-    struct tm * timeinfo;
-    //New access timestamp and getting location
-    time (&rawTime);
-    timeinfo = localtime (&rawTime);
-    strftime(timeBuffer, sizeof(timeBuffer), "%F[%T]%A", timeinfo);
-    theLog << "[New session]\n";
-    theLog << "System time: " << timeBuffer << endl;
+    theLog << "\n[New session at " << theTime << "]\n";
     cout << "Declare your location: ";
     cin.ignore();//dumps the leftover \n from menu selection and anything else if present
     getline(cin, theInput);
-    theLog << "Declared location: " << theInput << endl;
 
-    //Displaying timebuffer into cout for the first time for estetic purposes.
-    time (&rawTime);
-    timeinfo = localtime (&rawTime);
-    strftime(timeBuffer, sizeof(timeBuffer), "%T", timeinfo);
-    cout << "[" << timeBuffer << "]";
+	cout << "\nStarting at [" << theTime << "]\n\n";
+    
+    if(theInput != "0" || theInput != ""){
+		theLog << "Location: " << theInput << endl;
+	}
+
     int a = 0;
     while(a <= 70)
     {
+		cout << ">";
         getline(cin, theInput);
-
-        if(theInput == "\\menu")
+		
+        if(theInput == "\\menu"){ // "\\menu" = literal "\menu"
             break;
-        time (&rawTime);
-        timeinfo = localtime (&rawTime);
-        strftime(timeBuffer, sizeof(timeBuffer), "%T", timeinfo);
-        theLog << "[" << timeBuffer << "]" << theInput << endl;
-        cout << "[" << timeBuffer << "]";
+		}
+		
+        theLog << ">" << theInput << endl;
+
         if(theInput.size() > 70)
         {
             cout << "\nError, String exceeded the limit of 80.\n";
@@ -339,7 +349,7 @@ void logging()
             break;
         }
     }
-    theLog << "[End of session]\n";
+    theLog << "[End of session at " << currentDateTime() << "]\n";
     theLog.close();
 }
 
