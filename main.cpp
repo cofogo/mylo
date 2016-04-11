@@ -28,7 +28,7 @@ void versionHistory();
 void logging();//the main purpose of the program
 void displayLog();//displays the log file
 void listCommands();//lists available escape commands of the program
-const std::string currentDateTime();//return current date and time
+const string getTime(string _s = "%Y-%m-%d[%H:%M:%S](%A)");//return date and time based on tokens passed
 
 int main()
 {
@@ -297,7 +297,7 @@ void versionHistory()
     cout << "***END***\n";
 }
 
-const std::string currentDateTime() {//TODO use this instead of internal logging() code
+const string getTime(string _s) {
     time_t     now = time(0);
     struct tm  tstruct;
     char       buf[80];
@@ -305,7 +305,7 @@ const std::string currentDateTime() {//TODO use this instead of internal logging
     // Visit http://en.cppreference.com/w/cpp/chrono/c/strftime
     // for more information about date/time format
     //%F and %T seems to not work on windows
-    strftime(buf, sizeof(buf), "%Y-%m-%d[%H:%M:%S](%A)", &tstruct);
+    strftime(buf, sizeof(buf), _s.c_str(), &tstruct);
 
     return buf;
 }
@@ -315,8 +315,8 @@ void logging()
 {
     string theInput;
     ofstream theLog;
-    const string theTime = currentDateTime();
-    
+    const string theTime = getTime();
+
     theLog.open("TheLog", ios::out | ios::app | ios::binary);
 
     theLog << "\n[New session at " << theTime << "]\n";
@@ -325,8 +325,8 @@ void logging()
     getline(cin, theInput);
 
 	cout << "\nStarting at [" << theTime << "]\n\n";
-    
-    if(theInput != "0" || theInput != ""){
+
+    if(theInput != "0" && theInput != ""){
 		theLog << "Location: " << theInput << endl;
 	}
 
@@ -335,11 +335,11 @@ void logging()
     {
 		cout << ">";
         getline(cin, theInput);
-		
+
         if(theInput == "\\menu"){ // "\\menu" = literal "\menu"
             break;
 		}
-		
+
         theLog << ">" << theInput << endl;
 
         if(theInput.size() > 70)
@@ -349,7 +349,7 @@ void logging()
             break;
         }
     }
-    theLog << "[End of session at " << currentDateTime() << "]\n";
+    theLog << "[End of session at " << getTime() << "]\n";
     theLog.close();
 }
 
