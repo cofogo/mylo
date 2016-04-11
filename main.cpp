@@ -29,6 +29,7 @@ void logging();//the main purpose of the program
 void displayLog();//displays the log file
 void listCommands();//lists available escape commands of the program
 const string getTime(string _s = "%Y-%m-%d[%H:%M:%S](%A)");//return date and time based on tokens passed
+string wordWrap(string _s); //wraps contents of _s every 80 chars
 
 int main()
 {
@@ -294,6 +295,8 @@ void versionHistory()
     cout << "--Created a menu system for Graphic Options and a lot of settings.\n";
     cout << "\n2013.09.09 01:08 - 1.71\n";
     cout << "--Fixed the fact that an entry was missing in the colour select menu.\n";
+    cout << "\n2016.04.11 23:01 - 1.80\n";
+    cout << "--Made the code windows-compatible, improved on a chunk of old code.\n";
     cout << "***END***\n";
 }
 
@@ -310,6 +313,16 @@ const string getTime(string _s) {
     return buf;
 }
 
+string wordWrap(string _s){
+	int iter = 0;
+
+	while(_s.size() > 80 + (81 * iter)){
+		_s.insert(80 + (81 * iter), "\n");
+		iter++;
+	}
+
+	return _s;
+}
 
 void logging()
 {
@@ -340,14 +353,16 @@ void logging()
             break;
 		}
 
-        theLog << ">" << theInput << endl;
+		theInput = ">" + theInput;
+		theInput = wordWrap(theInput);
+        theLog << theInput << endl;
 
-        if(theInput.size() > 70)
+        /*if(theInput.size() > 70)
         {
             cout << "\nError, String exceeded the limit of 80.\n";
             cout << "Breaking to main menu.\n";
             break;
-        }
+        }*/
     }
     theLog << "[End of session at " << getTime() << "]\n";
     theLog.close();
