@@ -68,7 +68,11 @@ int main()
 
 void welcome()
 {
-    cout << "\nThis is Mylo(my logger) [should release as YOLO(Your Logger)]";
+	string version = "1.81";
+	string sepr(79, '*');
+
+	cout << endl << sepr << endl;
+    cout << "\nThis is Mylo version " << version << endl;;
     cout << "\nThis program is a digital diary that stores it's info in an"
         "\neasily human-readable file.\n";
 }
